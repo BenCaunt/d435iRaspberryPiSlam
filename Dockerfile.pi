@@ -46,14 +46,15 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ros-iron-yaml-cpp-vendor \
     ros-iron-rviz-rendering \
     ros-iron-ament-cmake \
+    ros-iron-rosidl-default-generators \
     && rm -rf /var/lib/apt/lists/*
 
 # Install dependencies
-WORKDIR ${COLCON_WS}
 RUN rosdep install --from-paths src --ignore-src -y \
     --rosdistro iron --os=ubuntu:jammy \
     --skip-keys="sensor_msgs tf2_ros rclcpp_components \
-                 diagnostic_updater yaml_cpp_vendor rviz_rendering"
+                 diagnostic_updater yaml_cpp_vendor rviz_rendering \
+                 ament_cmake rosidl_default_generators"
 
 # Build
 RUN . /opt/ros/iron/setup.sh && \
