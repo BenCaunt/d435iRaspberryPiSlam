@@ -72,6 +72,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ros-iron-tf2-ros \
     ros-iron-cv-bridge \
     ros-iron-librealsense2 \
+    ros-iron-launch-pytest \
     && rm -rf /var/lib/apt/lists/*
 
 # Install dependencies
