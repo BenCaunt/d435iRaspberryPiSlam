@@ -65,15 +65,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 WORKDIR ${COLCON_WS}
 RUN rosdep install --from-paths /colcon_ws/src --ignore-src -y \
     --rosdistro iron --os=ubuntu:jammy \
-    --skip-keys="sensor_msgs std_msgs tf2 tf2_ros tf2_geometry_msgs tf2_eigen \
-                 rclcpp rclcpp_components message_filters \
-                 diagnostic_updater yaml_cpp_vendor rviz_rendering \
-                 rviz_common rviz_ogre_vendor rviz_default_plugins \
-                 ament_cmake rosidl_default_generators \
-                 ros2topic ament_lint_common ament_lint_auto \
-                 ament_cmake_gtest launch_testing_ament_cmake \
-                 builtin_interfaces nav_msgs xacro"
-
 # Build
 RUN . /opt/ros/iron/setup.sh && \
     colcon build --merge-install --cmake-args -DCMAKE_BUILD_TYPE=Release
