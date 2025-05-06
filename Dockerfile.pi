@@ -71,6 +71,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ros-iron-rosidl-default-runtime \
     ros-iron-tf2-ros \
     ros-iron-cv-bridge \
+    ros-iron-librealsense2 \
     && rm -rf /var/lib/apt/lists/*
 
 # Install dependencies
