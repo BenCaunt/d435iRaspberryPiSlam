@@ -1,135 +1,80 @@
 ###############################################################################
-# ───────────────  STAGE 1 : build everything from source  ────────────────────
+# ─────────────────────  STAGE 1 : build from source  ─────────────────────────
 ###############################################################################
 FROM ros:iron-ros-base AS builder
+
 ENV DEBIAN_FRONTEND=noninteractive \
     COLCON_WS=/colcon_ws
 
-
-        
-# ---------- base tools -------------------------------------------------------
+# ---------- base build tools -------------------------------------------------
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential git cmake ninja-build pkg-config curl \
-    python3-colcon-common-extensions python3-vcstool python3-rosdep \
-    libudev-dev libusb-1.0-0-dev libyaml-cpp-dev libeigen3-dev \
-    libboost-all-dev libopencv-dev libssl-dev && \
-    rm -rf /var/lib/apt/lists/*
+      build-essential git cmake ninja-build pkg-config curl \
+      python3-colcon-common-extensions python3-vcstool python3-rosdep \
+      libudev-dev libusb-1.0-0-dev libyaml-cpp-dev libeigen3-dev \
+      libboost-all-dev libopencv-dev libssl-dev
 
+# ---------- rosdep init ------------------------------------------------------
+RUN rm /etc/ros/rosdep/sources.list.d/20-default.list && \
+    rosdep init && \
+    rosdep update --include-eol-distros
 
-# ---------- rosdep init inside container -------------------------------------
-RUN sudo rm /etc/ros/rosdep/sources.list.d/20-default.list
-RUN rosdep init \
-&& rosdep update --include-eol-distros
-
-# ---------- librealsense (user-space) ----------------------------------------
+# ---------- librealsense (user-space) ---------------------------------------
 WORKDIR /tmp
-RUN git clone --depth 1 https://github.com/IntelRealSense/librealsense.git
-WORKDIR /tmp/librealsense
-RUN mkdir build && cd build && \
+RUN git clone --depth 1 https://github.com/IntelRealSense/librealsense.git && \
+    cd  librealsense && mkdir build && cd build && \
     cmake .. -DCMAKE_BUILD_TYPE=Release \
              -DFORCE_LIBUVC=ON -DBUILD_KERNEL=OFF \
              -DBUILD_WITH_SYSTEM_LIBUSB=ON \
              -DBUILD_EXAMPLES=OFF -DBUILD_GRAPHICAL_EXAMPLES=OFF && \
-    cmake --build . -j$(nproc) && cmake --install .
+    cmake --build . -j$(nproc) && \
+    cmake --install .
 
 # ---------- create ROS 2 workspace ------------------------------------------
 RUN mkdir -p ${COLCON_WS}/src
 WORKDIR ${COLCON_WS}/src
 
-# Clone sources
-RUN git clone -b ros2-development https://github.com/IntelRealSense/realsense-ros.git
-RUN git clone -b ros2 https://github.com/SteveMacenski/slam_toolbox.git
-RUN git clone -b rolling https://github.com/CCNYRoboticsLab/imu_tools.git
-RUN git clone -b ros2 https://github.com/cra-ros-pkg/robot_localization.git
+RUN git clone -b ros2-development https://github.com/IntelRealSense/realsense-ros.git && \
+    git clone -b ros2               https://github.com/SteveMacenski/slam_toolbox.git && \
+    git clone -b rolling            https://github.com/CCNYRoboticsLab/imu_tools.git && \
+    git clone -b ros2               https://github.com/cra-ros-pkg/robot_localization.git
 
-
-# ---------- extra runtime ROS 2 binaries the base image lacks ---------------
-RUN apt-get update && apt-get install -y \
-    ros-iron-diagnostic-updater \
-    ros-iron-yaml-cpp-vendor \
-    ros-iron-rviz-rendering \
-    ros-iron-ament-cmake \
-    ros-iron-rviz-ogre-vendor \
-    ros-iron-rosidl-default-generators \
-    ros-iron-ros2topic \
-    ros-iron-ament-lint-common \
-    ros-iron-ament-lint-auto \
-    ros-iron-ament-cmake-gtest \
-    ros-iron-launch-testing-ament-cmake \
-    ros-iron-rviz-common \
-    ros-iron-rviz-default-plugins \
-    ros-iron-xacro \
-    ros-iron-launch-ros \
-    ros-iron-pluginlib \
-    ros-iron-ament-cmake-uncrustify \
-    ros-iron-geometry-msgs \
-    ros-iron-sensor-msgs \
-    ros-iron-std-msgs \
-    ros-iron-std-srvs \
-    ros-iron-pluginlib \
-    ros-iron-launch-ros \
-    ros-iron-rosidl-default-runtime \
-    ros-iron-tf2-ros \
-    ros-iron-cv-bridge \
-    ros-iron-librealsense2 \
-    ros-iron-launch-pytest \
-    python3-tqdm \
-    python3-requests \
-    ros-iron-angles \
-    ros-iron-geographic-msgs \ 
-    libsuitesparse-dev \
-    libceres-dev \
-    libgeographic-dev \
-    ros-iron-bondcpp \
-    && rm -rf /var/lib/apt/lists/*
-
-# Install dependencies
+# ---------- resolve ROS dependencies ----------------------------------------
 WORKDIR ${COLCON_WS}
-RUN rosdep install --from-paths /colcon_ws/src --ignore-src -y 
-    # --skip-keys="sensor_msgs std_msgs tf2 tf2_ros tf2_geometry_msgs tf2_eigen \
-    # rclcpp rclcpp_components message_filters \
-    # diagnostic_updater yaml_cpp_vendor rviz_rendering \
-    # rviz_common rviz_ogre_vendor rviz_default_plugins \
-    # ament_cmake rosidl_default_generators \
-    # ros2topic ament_lint_common ament_lint_auto \
-    # ament_cmake_gtest launch_testing_ament_cmake \
-    # builtin_interfaces nav_msgs xacro"
+RUN apt-get update && \
+    rosdep install --from-paths src --ignore-src -r -y --rosdistro iron && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
 
-
-
-# Build
+# ---------- build workspace --------------------------------------------------
 RUN . /opt/ros/iron/setup.sh && \
     colcon build --merge-install --cmake-args -DCMAKE_BUILD_TYPE=Release
 
 ###############################################################################
-# ───────────  STAGE 2 : runtime image (strip the build junk)  ───────────────-
+# ────────────────  STAGE 2 : runtime (slim)  ────────────────────────────────
 ###############################################################################
 FROM ros:iron-ros-base
+
 ENV COLCON_WS=/colcon_ws \
     ROS_DISTRO=iron \
-    LANG=C.UTF-8
+    LANG=C.UTF-8 \
+    RMW_IMPLEMENTATION=rmw_fastrtps_cpp
 
-# Runtime libs needed by librealsense & slam
+# Minimal runtime libs for librealsense & OpenCV
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    libusb-1.0-0 libudev1 libyaml-cpp0.7 libeigen3-dev libboost-system1.74.0 \
-    libopencv-core4.5d libopencv-imgproc4.5d libopencv-imgcodecs4.5d && \
-    rm -rf /var/lib/apt/lists/*
+      libusb-1.0-0 libudev1 libyaml-cpp0.7 libboost-system1.74.0 \
+      libopencv-core4.5d libopencv-imgproc4.5d libopencv-imgcodecs4.5d && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# copy artefacts from builder
+# Copy artefacts from builder
 COPY --from=builder /usr/local /usr/local
 COPY --from=builder /opt/ros/${ROS_DISTRO} /opt/ros/${ROS_DISTRO}
 COPY --from=builder ${COLCON_WS}/install ${COLCON_WS}/install
-
-# udev rule (camera permissions)
 COPY --from=builder /tmp/librealsense/config/99-realsense-libusb.rules /etc/udev/rules.d/
 
-# entry
-ENV RMW_IMPLEMENTATION=rmw_fastrtps_cpp
-RUN echo "source /opt/ros/${ROS_DISTRO}/setup.bash"            >> /etc/bash.bashrc && \
-    echo "source ${COLCON_WS}/install/setup.bash"              >> /etc/bash.bashrc
+# Convenience: source workspaces for every shell
+RUN echo "source /opt/ros/${ROS_DISTRO}/setup.bash" >> /etc/bash.bashrc && \
+    echo "source ${COLCON_WS}/install/setup.bash"   >> /etc/bash.bashrc
 
 ENTRYPOINT ["/ros_entrypoint.sh"]
-CMD ["bash", "-c", "ros2 launch realsense2_camera rs_launch.py \
-                   align_depth:=true enable_gyro:=true enable_accel:=true \
-                   unite_imu_method:=linear_interpolation"]
-    
+CMD ["ros2", "launch", "realsense2_camera", "rs_launch.py", \
+     "align_depth:=true", "enable_gyro:=true", "enable_accel:=true", \
+     "unite_imu_method:=linear_interpolation"]
