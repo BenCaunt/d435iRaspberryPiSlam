@@ -56,6 +56,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ros-iron-rviz-common \
     ros-iron-rviz-default-plugins \
     ros-iron-xacro \
+    ros-iron-launch-ros \
+    ros-iron-pluginlib \
     && rm -rf /var/lib/apt/lists/*
 
 # Install dependencies
