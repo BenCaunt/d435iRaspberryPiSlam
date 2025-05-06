@@ -75,6 +75,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ros-iron-launch-pytest \
     python3-tqdm \
     python3-requests \
+    ros-iron-angles \
     && rm -rf /var/lib/apt/lists/*
 
 # Install dependencies
