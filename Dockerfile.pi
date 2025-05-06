@@ -17,6 +17,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 
 # ---------- rosdep init inside container -------------------------------------
+RUN sudo rm /etc/ros/rosdep/sources.list.d/20-default.list
 RUN rosdep init \
 && rosdep update
 
