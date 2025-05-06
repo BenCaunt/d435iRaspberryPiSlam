@@ -50,6 +50,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 # Install dependencies
+WORKDIR ${COLCON_WS}
 RUN rosdep install --from-paths src --ignore-src -y \
     --rosdistro iron --os=ubuntu:jammy \
     --skip-keys="sensor_msgs tf2_ros rclcpp_components \
