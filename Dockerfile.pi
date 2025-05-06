@@ -5,6 +5,8 @@ FROM ros:iron-ros-base as builder
 ENV DEBIAN_FRONTEND=noninteractive \
     COLCON_WS=/colcon_ws
 
+
+        
 # ---------- base tools -------------------------------------------------------
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential git cmake ninja-build pkg-config curl \
@@ -37,10 +39,23 @@ RUN git clone -b ros2 https://github.com/SteveMacenski/slam_toolbox.git
 RUN git clone -b rolling https://github.com/ccny-ros-pkg/imu_tools.git
 RUN git clone -b ros2 https://github.com/cra-ros-pkg/robot_localization.git
 
+
+# ---------- extra runtime ROS 2 binaries the base image lacks ---------------
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ros-iron-diagnostic-updater \
+    ros-iron-yaml-cpp-vendor \
+    ros-iron-rviz-rendering \
+    && rm -rf /var/lib/apt/lists/*
+
 # Install dependencies
 WORKDIR ${COLCON_WS}
 RUN rosdep install --from-paths src --ignore-src -y \
         --rosdistro iron --os=ubuntu:jammy
+
+RUN rosdep install --from-paths src --ignore-src -y \
+    --rosdistro iron --os=ubuntu:jammy \
+    --skip-keys="sensor_msgs tf2_ros rclcpp_components \
+                 diagnostic_updater yaml_cpp_vendor rviz_rendering"
 
 # Build
 RUN . /opt/ros/iron/setup.sh && \
