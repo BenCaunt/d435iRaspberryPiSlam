@@ -1,7 +1,7 @@
 ###############################################################################
 # ───────────────  STAGE 1 : build everything from source  ────────────────────
 ###############################################################################
-FROM ros:iron-ros-base as builder
+FROM ros:iron-ros-base AS builder
 ENV DEBIAN_FRONTEND=noninteractive \
     COLCON_WS=/colcon_ws
 
