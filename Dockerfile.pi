@@ -80,12 +80,12 @@ RUN apt-get update && apt-get install -y \
     libsuitesparse-dev \
     libceres-dev \
     libgeographic-dev \
+    ros-iron-bondcpp \
     && rm -rf /var/lib/apt/lists/*
 
 # Install dependencies
 WORKDIR ${COLCON_WS}
-RUN rosdep install --from-paths /colcon_ws/src --ignore-src -y \
-    --rosdistro iron
+RUN rosdep install --from-paths /colcon_ws/src --ignore-src -y 
     # --skip-keys="sensor_msgs std_msgs tf2 tf2_ros tf2_geometry_msgs tf2_eigen \
     # rclcpp rclcpp_components message_filters \
     # diagnostic_updater yaml_cpp_vendor rviz_rendering \
