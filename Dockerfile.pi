@@ -36,7 +36,7 @@ WORKDIR ${COLCON_WS}/src
 # Clone sources
 RUN git clone -b ros2-development https://github.com/IntelRealSense/realsense-ros.git
 RUN git clone -b ros2 https://github.com/SteveMacenski/slam_toolbox.git
-RUN git clone -b rolling https://github.com/ccny-ros-pkg/imu_tools.git
+RUN git clone -b rolling https://github.com/CCNYRoboticsLab/imu_tools.git
 RUN git clone -b ros2 https://github.com/cra-ros-pkg/robot_localization.git
 
 
@@ -45,13 +45,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ros-iron-diagnostic-updater \
     ros-iron-yaml-cpp-vendor \
     ros-iron-rviz-rendering \
+    ros-iron-ament-cmake \
     && rm -rf /var/lib/apt/lists/*
 
 # Install dependencies
 WORKDIR ${COLCON_WS}
-RUN rosdep install --from-paths src --ignore-src -y \
-        --rosdistro iron --os=ubuntu:jammy
-
 RUN rosdep install --from-paths src --ignore-src -y \
     --rosdistro iron --os=ubuntu:jammy \
     --skip-keys="sensor_msgs tf2_ros rclcpp_components \
