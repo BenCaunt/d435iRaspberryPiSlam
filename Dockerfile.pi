@@ -73,6 +73,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ros-iron-cv-bridge \
     ros-iron-librealsense2 \
     ros-iron-launch-pytest \
+    python3-tqdm \
     && rm -rf /var/lib/apt/lists/*
 
 # Install dependencies
