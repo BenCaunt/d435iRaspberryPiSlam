@@ -17,7 +17,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 
 # ---------- rosdep init inside container -------------------------------------
-RUN rosdep update
+RUN rosdep init \
+&& rosdep update
 
 # ---------- librealsense (user-space) ----------------------------------------
 WORKDIR /tmp
@@ -67,6 +68,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ros-iron-pluginlib \
     ros-iron-launch-ros \
     ros-iron-rosidl-default-runtime \
+    ros-iron-tf2-ros \
     && rm -rf /var/lib/apt/lists/*
 
 # Install dependencies
