@@ -32,9 +32,9 @@ RUN mkdir -p ${COLCON_WS}/src
 WORKDIR ${COLCON_WS}/src
 
 # Clone sources
-RUN git clone -b ros2 https://github.com/IntelRealSense/realsense-ros.git
-RUN git clone -b humble https://github.com/SteveMacenski/slam_toolbox.git
-RUN git clone -b ros2 https://github.com/ccny-ros-pkg/imu_tools.git
+RUN git clone -b ros2-development https://github.com/IntelRealSense/realsense-ros.git
+RUN git clone -b ros2 https://github.com/SteveMacenski/slam_toolbox.git
+RUN git clone -b rolling https://github.com/ccny-ros-pkg/imu_tools.git
 RUN git clone -b ros2 https://github.com/cra-ros-pkg/robot_localization.git
 
 # Install dependencies
