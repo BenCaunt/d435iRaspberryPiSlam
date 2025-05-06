@@ -44,7 +44,7 @@ RUN git clone -b ros2 https://github.com/cra-ros-pkg/robot_localization.git
 
 
 # ---------- extra runtime ROS 2 binaries the base image lacks ---------------
-RUN apt-get update && apt-get install -y --no-install-recommends \
+RUN apt-get update && apt-get install -y \
     ros-iron-diagnostic-updater \
     ros-iron-yaml-cpp-vendor \
     ros-iron-rviz-rendering \
@@ -77,6 +77,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     python3-requests \
     ros-iron-angles \
     ros-iron-geographic-msgs \ 
+    libsuitesparse-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # Install dependencies
