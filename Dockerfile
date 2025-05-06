@@ -7,11 +7,13 @@ ENV DEBIAN_FRONTEND=noninteractive \
     COLCON_WS=/colcon_ws
 
 # ---------- base build tools -------------------------------------------------
-RUN apt-get update && apt-get install -y --no-install-recommends \
-      build-essential git cmake ninja-build pkg-config curl \
-      python3-colcon-common-extensions python3-vcstool python3-rosdep \
-      libudev-dev libusb-1.0-0-dev libyaml-cpp-dev libeigen3-dev \
-      libboost-all-dev libopencv-dev libssl-dev
+    RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential git cmake ninja-build pkg-config curl \
+    python3-colcon-common-extensions python3-vcstool python3-rosdep \
+    libudev-dev libusb-1.0-0-dev libyaml-cpp-dev libeigen3-dev \
+    libboost-all-dev libopencv-dev libssl-dev \
+    ros-iron-yaml-cpp-vendor
+
 
 # ---------- rosdep init ------------------------------------------------------
 RUN rm /etc/ros/rosdep/sources.list.d/20-default.list && \
