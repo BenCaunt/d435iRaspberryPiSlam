@@ -72,7 +72,9 @@ COPY --from=builder /tmp/librealsense/config/99-realsense-libusb.rules /etc/udev
 ENV RMW_IMPLEMENTATION=rmw_fastrtps_cpp
 RUN echo "source /opt/ros/${ROS_DISTRO}/setup.bash"            >> /etc/bash.bashrc && \
     echo "source ${COLCON_WS}/install/setup.bash"              >> /etc/bash.bashrc
+
 ENTRYPOINT ["/ros_entrypoint.sh"]
-CMD ["ros2", "launch", "realsense2_camera", "rs_launch.py",
-     "align_depth:=true", "enable_gyro:=true", "enable_accel:=true",
-     "unite_imu_method:=linear_interpolation"]
+CMD ["bash", "-c", "ros2 launch realsense2_camera rs_launch.py \
+                   align_depth:=true enable_gyro:=true enable_accel:=true \
+                   unite_imu_method:=linear_interpolation"]
+    
