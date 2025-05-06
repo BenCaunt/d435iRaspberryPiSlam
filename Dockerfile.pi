@@ -76,7 +76,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     python3-tqdm \
     python3-requests \
     ros-iron-angles \
-    ros-iron-geographic-msgs
+    ros-iron-geographic-msgs \ 
     && rm -rf /var/lib/apt/lists/*
 
 # Install dependencies
