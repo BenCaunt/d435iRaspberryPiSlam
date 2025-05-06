@@ -14,7 +14,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     rm -rf /var/lib/apt/lists/*
 
 # ---------- rosdep init inside container -------------------------------------
-RUN rosdep init && rosdep update
+RUN rosdep init
+RUN rosdep update
 
 # ---------- librealsense (user-space) ----------------------------------------
 WORKDIR /tmp
