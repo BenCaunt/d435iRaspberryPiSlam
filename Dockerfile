@@ -42,6 +42,8 @@ RUN git clone -b ros2-development https://github.com/IntelRealSense/realsense-ro
 
 # ---------- resolve ROS dependencies ----------------------------------------
 WORKDIR ${COLCON_WS}
+RUN git clone -b iron https://github.com/ros2/yaml_cpp_vendor.git ${COLCON_WS}/src/yaml_cpp_vendor
+WORKDIR ${COLCON_WS}
 RUN apt-get update && \
     rosdep install --from-paths src --ignore-src -r -y --rosdistro iron && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
