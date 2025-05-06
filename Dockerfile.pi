@@ -58,6 +58,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ros-iron-xacro \
     ros-iron-launch-ros \
     ros-iron-pluginlib \
+    ros-iron-ament-cmake-uncrustify \
     && rm -rf /var/lib/apt/lists/*
 
 # Install dependencies
