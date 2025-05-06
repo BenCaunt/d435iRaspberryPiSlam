@@ -59,12 +59,20 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ros-iron-launch-ros \
     ros-iron-pluginlib \
     ros-iron-ament-cmake-uncrustify \
+    ros-iron-geometry-msgs \
+    ros-iron-sensor-msgs \
+    ros-iron-std-msgs \
+    ros-iron-std-srvs \
+    ros-iron-pluginlib \
+    ros-iron-launch-ros \
+    ros-iron-rosidl-default-runtime \
     && rm -rf /var/lib/apt/lists/*
 
 # Install dependencies
 WORKDIR ${COLCON_WS}
 RUN rosdep install --from-paths /colcon_ws/src --ignore-src -y \
     --rosdistro iron --os=ubuntu:jammy
+
 # Build
 RUN . /opt/ros/iron/setup.sh && \
     colcon build --merge-install --cmake-args -DCMAKE_BUILD_TYPE=Release
