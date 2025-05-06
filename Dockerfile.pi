@@ -46,6 +46,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ros-iron-yaml-cpp-vendor \
     ros-iron-rviz-rendering \
     ros-iron-ament-cmake \
+    ros-iron-rviz-ogre-vendor \
     ros-iron-rosidl-default-generators \
     && rm -rf /var/lib/apt/lists/*
 
