@@ -35,7 +35,7 @@ RUN git clone --depth 1 https://github.com/IntelRealSense/librealsense.git && \
 RUN mkdir -p ${COLCON_WS}/src
 WORKDIR ${COLCON_WS}/src
 
-RUN git clone -b ros2-development https://github.com/IntelRealSense/realsense-ros.git && \
+RUN git clone -b ros2-master https://github.com/IntelRealSense/realsense-ros.git && \
     git clone -b ros2               https://github.com/SteveMacenski/slam_toolbox.git && \
     git clone -b rolling            https://github.com/CCNYRoboticsLab/imu_tools.git && \
     git clone -b ros2               https://github.com/cra-ros-pkg/robot_localization.git
